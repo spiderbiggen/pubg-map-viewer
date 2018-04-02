@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pubg-map-viewer.iml" filepath="$PROJECT_DIR$/.idea/modules/pubg-map-viewer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pubg-map-viewer_main.iml" filepath="$PROJECT_DIR$/.idea/modules/pubg-map-viewer_main.iml" group="pubg-map-viewer" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/pubg-map-viewer_test.iml" filepath="$PROJECT_DIR$/.idea/modules/pubg-map-viewer_test.iml" group="pubg-map-viewer" />
+    </modules>
+  </component>
+</project>

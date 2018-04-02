@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.spiderbiggen.pmv.views.MapCanvas?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.*?>
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spiderbiggen.pmv.controllers.Home">
+    <fx:define>
+        <ToggleGroup fx:id="mapGroup" />
+    </fx:define>
+    <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+        <top>
+            <MenuBar fx:id="menuBar" />
+        </top>
+        <left>
+            <AnchorPane>
+                <VBox spacing="10">
+                    <TextField fx:id="userNameField" />
+                    <RadioButton toggleGroup="$mapGroup" onAction="#selectedErangel" text="Erangel" selected="true" />
+                    <RadioButton toggleGroup="$mapGroup" onAction="#selectedMiramar" text="Miramar" />
+                </VBox>
+            </AnchorPane>
+        </left>
+        <center>
+            <AnchorPane>
+                <MapCanvas fx:id="canvas" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"
+                           onScroll="#zoom" onMouseDragged="#onDrag" onMousePressed="#onStartDrag" />
+            </AnchorPane>
+        </center>
+    </BorderPane>
+</AnchorPane>
