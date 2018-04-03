@@ -3,7 +3,7 @@ package com.spiderbiggen.pmv.models;
 import java.util.Locale;
 
 public enum GameMap {
-    ERANGEL("/img/maps/erangel_full_map_downscaled.jpg", 1.0),
+    ERANGEL("/img/maps/erangel_full_map_downscaled.jpg", 800000.0),
     MIRAMAR("/img/maps/miramar_full_map_downscaled.jpg", 1.0);
 
     private final String relativePath;

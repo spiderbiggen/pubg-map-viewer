@@ -1,9 +1,19 @@
 package com.spiderbiggen.pmv.views;
 
+import com.spiderbiggen.pmv.JsonParser;
 import com.spiderbiggen.pmv.models.GameMap;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Paint;
+
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class MapCanvas extends Canvas {
 
@@ -13,12 +23,17 @@ public class MapCanvas extends Canvas {
     private static final double MIN_ZOOM = 0;
     //log2(10)
     private static final double MAX_ZOOM = 3.32192809489;
+    private static final String[] colors = {"#f00", "#0f0", "#00f", "ff0", "f0f", "0ff"};
 
     //can't be 0
     private double drawSize = 1;
+    private GameMap map;
     private Image image = null;
     private double zoom = 0;
     private double x = 0, y = 0;
+    private Map<String, List<JsonParser.GameEvent>> locations;
+    private Set<String> playerNames = new HashSet<>();
+
 
     /**
      * Sets map.
@@ -26,8 +41,27 @@ public class MapCanvas extends Canvas {
      * @param map the new value of map
      */
     public void setMap(GameMap map) {
+        this.map = map;
         this.image = new Image(getClass().getResourceAsStream(map.getRelativePath()));
         draw();
+    }
+
+    /**
+     * Sets locations.
+     *
+     * @param locations the new value of locations
+     */
+    public void setPlayers(Map<String, List<JsonParser.GameEvent>> locations) {
+        this.locations = locations;
+    }
+
+    /**
+     * Sets playerNames.
+     *
+     * @param playerNames the new value of playerNames
+     */
+    public void setPlayerNames(String... playerNames) {
+        this.playerNames = new HashSet<>(Arrays.asList(playerNames));
     }
 
     @Override
@@ -124,13 +158,36 @@ public class MapCanvas extends Canvas {
         getGraphicsContext2D().clearRect(0, 0, getWidth(), getHeight());
     }
 
-    private void draw() {
+    public void draw() {
         if (image == null) return;
         clear();
         GraphicsContext context = getGraphicsContext2D();
         context.drawImage(image, x, y, drawSize, drawSize);
-        System.out.println("(" + x + ", " + y + ")");
-        System.out.println(drawSize);
+        context.setFill(Paint.valueOf("#f00"));
+        context.setStroke(Paint.valueOf("#00f"));
+        double mapSize = 819_550; // 819_500;
+        double pointSize = Math.max(2, Math.pow(2, zoom) / 2);
+        if (locations == null || locations.isEmpty()) return;
+        AtomicInteger i = new AtomicInteger();
+        locations.entrySet().stream()
+                .filter(entry -> playerNames.contains(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .forEach(events -> {
+                    List<JsonParser.Location> normalized = events.stream()
+                            .map(JsonParser.GameEvent::getCharacter)
+                            .map(JsonParser.Character::getLocation)
+                            .map(location -> location.getNormalized(mapSize))
+                            .collect(Collectors.toList());
+                    JsonParser.Location start = normalized.get(0);
+                    context.beginPath();
+                    context.setStroke(Paint.valueOf(colors[i.incrementAndGet() % colors.length]));
+                    context.setLineWidth(pointSize);
+                    context.moveTo(start.getX() * drawSize + x, start.getY() * drawSize + y);
+                    normalized.listIterator(1).forEachRemaining(location -> context.lineTo(location.getX() * drawSize + x, location.getY() * drawSize + y));
+                    context.stroke();
+                });
+
     }
+
 
 }
