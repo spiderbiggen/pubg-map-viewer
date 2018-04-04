@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.spiderbiggen.pmv.views.MapCanvas?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.control.Button?>
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.spiderbiggen.pmv.controllers.Home">
     <fx:define>
         <ToggleGroup fx:id="mapGroup" />
@@ -17,18 +18,24 @@
         </top>
         <left>
             <AnchorPane>
-                <VBox spacing="10">
-                    <TextField fx:id="userNameField" />
-                    <RadioButton toggleGroup="$mapGroup" onAction="#selectedErangel" text="Erangel" selected="true" />
-                    <RadioButton toggleGroup="$mapGroup" onAction="#selectedMiramar" text="Miramar" />
-                    <Button onAction="#refresh" text="Refresh" />
+                <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+                    <VBox spacing="10">
+                        <Button onAction="#selectFileDialog" text="Browse..." maxWidth="Infinity" />
+                        <RadioButton onAction="#selectedErangel" selected="true" text="Erangel" toggleGroup="$mapGroup" />
+                        <RadioButton onAction="#selectedMiramar" text="Miramar" toggleGroup="$mapGroup" />
+                        <Button onAction="#refresh" text="Refresh" maxWidth="Infinity" />
+                        <Button onAction="#randomizeColors" text="Randomize colors" maxWidth="Infinity" />
+                        <padding>
+                            <Insets topRightBottomLeft="10" />
+                        </padding>
+                    </VBox>
+                    <ListView fx:id="playerList" VBox.vgrow="ALWAYS" />
                 </VBox>
             </AnchorPane>
         </left>
         <center>
             <AnchorPane>
-                <MapCanvas fx:id="canvas" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0"
-                           onScroll="#zoom" onMouseDragged="#onDrag" onMousePressed="#onStartDrag" />
+                <MapCanvas fx:id="canvas" onMouseDragged="#onDrag" onMousePressed="#onStartDrag" onScroll="#zoom" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0" />
             </AnchorPane>
         </center>
     </BorderPane>
