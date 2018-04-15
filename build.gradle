@@ -1,9 +1,9 @@
-group 'com.spiderbiggen'
-version '1.0-SNAPSHOT'
+group = 'com.spiderbiggen'
+version = '1.0-SNAPSHOT'
 
 apply plugin: 'java'
 
-sourceCompatibility = 1.9
+sourceCompatibility = 1.10
 
 repositories {
     mavenCentral()
