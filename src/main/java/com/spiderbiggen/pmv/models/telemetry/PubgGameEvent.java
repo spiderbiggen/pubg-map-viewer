@@ -11,10 +11,10 @@ public class PubgGameEvent implements Comparable<PubgGameEvent> {
 
     private final PubgCharacter character;
     private final PubgCommon common;
-    private final String type; // _T
+    private final TelemetryEvent type; // _T
     private final LocalDateTime dateTime; // _D
 
-    public PubgGameEvent(PubgCharacter character, PubgCommon common, String type, LocalDateTime dateTime) {
+    public PubgGameEvent(PubgCharacter character, PubgCommon common, TelemetryEvent type, LocalDateTime dateTime) {
         this.character = character;
         this.common = common;
         this.type = type;
@@ -30,10 +30,10 @@ public class PubgGameEvent implements Comparable<PubgGameEvent> {
         if (object.has("common")) {
             common = PubgCommon.parse(object.getJSONObject("common"));
         }
-        String type = object.getString("_T");
+        TelemetryEvent _t = TelemetryEvent.fromString(object.getString("_T"));
         String _d = object.getString("_D");
         LocalDateTime dateTime = LocalDateTime.from(format.parse(_d));
-        return new PubgGameEvent(character, common, type, dateTime);
+        return new PubgGameEvent(character, common, _t, dateTime);
     }
 
     /**
@@ -59,7 +59,7 @@ public class PubgGameEvent implements Comparable<PubgGameEvent> {
      *
      * @return value of type
      */
-    public String getType() {
+    public TelemetryEvent getType() {
         return type;
     }
 

@@ -2,7 +2,7 @@ package com.spiderbiggen.pmv.models;
 
 import java.util.Objects;
 
-public class PubgUser {
+public class PubgUser implements Comparable<PubgUser> {
 
     private final String username;
     private final String accountId;
@@ -47,5 +47,10 @@ public class PubgUser {
     @Override
     public String toString() {
         return username;
+    }
+
+    @Override
+    public int compareTo(PubgUser o) {
+        return getUsername().compareTo(o.getUsername());
     }
 }

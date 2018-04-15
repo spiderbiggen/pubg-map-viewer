@@ -1,8 +1,9 @@
 package com.spiderbiggen.pmv.views;
 
-import com.spiderbiggen.pmv.models.telemetry.PubgLocation;
 import com.spiderbiggen.pmv.models.PubgUser;
-import com.spiderbiggen.pmv.util.ViewHelper;
+import com.spiderbiggen.pmv.models.drawing.Path2D;
+import com.spiderbiggen.pmv.util.Colors;
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
@@ -13,7 +14,6 @@ import javafx.scene.shape.StrokeLineJoin;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,10 +31,9 @@ public class MapCanvas extends Canvas {
     private Image image = null;
     private double zoom = 0;
     private double x = 0, y = 0;
-    private Map<PubgUser, List<PubgLocation>> mapAccountIdEvents;
+    private Map<PubgUser, Path2D> userPaths = new HashMap<>();
     private Set<PubgUser> selectedPlayers = new HashSet<>();
-    private Map<PubgUser, Color> colorMap;
-
+    private Map<PubgUser, Color> colorMap = new HashMap<>();
 
     /**
      * Sets map.
@@ -46,12 +45,15 @@ public class MapCanvas extends Canvas {
     }
 
     /**
-     * Sets mapAccountIdEvents.
+     * Sets userPaths.
      *
-     * @param locations the new value of mapAccountIdEvents
+     * @param locations the new value of userPaths
      */
-    public void setEventsForAccountIds(Map<PubgUser, List<PubgLocation>> locations) {
-        this.mapAccountIdEvents = new HashMap<>(locations);
+    public void setUserPaths(Map<PubgUser, Path2D> locations) {
+        this.userPaths = new HashMap<>(locations);
+        for (var path2D : userPaths.values()) {
+            path2D.setScale(drawSize).translateTo(x, y);
+        }
     }
 
     /**
@@ -80,11 +82,17 @@ public class MapCanvas extends Canvas {
         recalculateDrawSize();
         setX(centerX - (imageX * drawSize));
         setY(centerY - (imageY * drawSize));
+        for (var path2D : userPaths.values()) {
+            path2D.setScale(drawSize).translateTo(x, y);
+        }
     }
 
     public void move(double dX, double dY) {
         setX(x + dX);
         setY(y + dY);
+        for (var path2D : userPaths.values()) {
+            path2D.translateTo(x, y);
+        }
     }
 
     private void setX(final double newX) {
@@ -105,37 +113,36 @@ public class MapCanvas extends Canvas {
         }
     }
 
-    private void clear() {
-        getGraphicsContext2D().clearRect(0, 0, getWidth(), getHeight());
+    private void clear(GraphicsContext context) {
+        context.clearRect(0, 0, getWidth(), getHeight());
     }
 
     public void draw() {
-        if (image == null) return;
-        clear();
-        GraphicsContext context = getGraphicsContext2D();
-        context.drawImage(image, x, y, drawSize, drawSize);
-        if (mapAccountIdEvents == null || mapAccountIdEvents.isEmpty()) return;
-        double pointSize = Math.max(2, Math.pow(2, zoom) / 2);
-        context.setLineCap(StrokeLineCap.ROUND);
-        context.setLineJoin(StrokeLineJoin.ROUND);
-        context.setLineWidth(pointSize);
-        mapAccountIdEvents.entrySet().stream()
-                .filter(entry -> selectedPlayers.contains(entry.getKey()))
-                .forEach(events -> {
-                    List<PubgLocation> locations = events.getValue();
-                    context.beginPath();
-                    context.setStroke(colorMap.get(events.getKey()));
-                    PubgLocation start = locations.get(0);
-                    context.moveTo(start.getX() * drawSize + x, start.getY() * drawSize + y);
-                    locations.listIterator(1).forEachRemaining(location -> context.lineTo(location.getX() * drawSize + x, location.getY() * drawSize + y));
-                    context.stroke();
-                });
+        Platform.runLater(() -> {
+            var context2D = getGraphicsContext2D();
+            clear(context2D);
+            if (image != null) {
+                context2D.drawImage(image, x, y, drawSize, drawSize);
+            }
+            if (userPaths == null || userPaths.isEmpty()) return;
+            double pointSize = Math.max(2, Math.pow(2, zoom) / 2);
+            context2D.setLineCap(StrokeLineCap.ROUND);
+            context2D.setLineJoin(StrokeLineJoin.ROUND);
+            context2D.setLineWidth(pointSize);
 
+            selectedPlayers.forEach(player -> {
+                if (!userPaths.containsKey(player)) return;
+                if (colorMap.containsKey(player)) {
+                    context2D.setStroke(colorMap.get(player));
+                }
+                userPaths.get(player).draw(context2D);
+            });
+        });
     }
 
     public void randomizeColors() {
         colorMap = new HashMap<>();
-        mapAccountIdEvents.forEach((player, g) -> colorMap.put(player, ViewHelper.getRandomColor(0.7)));
+        userPaths.forEach((player, g) -> colorMap.put(player, Colors.getRandomColor(0.7)));
     }
 
     @Override
@@ -170,6 +177,7 @@ public class MapCanvas extends Canvas {
 
     @Override
     public void resize(final double width, final double height) {
+
         double centerX = getWidth() / 2;
         double centerY = getHeight() / 2;
 

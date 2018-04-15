@@ -6,10 +6,10 @@ import org.json.JSONObject;
 public class PubgCharacter extends PubgUser {
     private final int teamId;
     private final double health;
-    private final PubgLocation location;
+    private final Point3D location;
     private final int ranking;
 
-    public PubgCharacter(String name, int teamId, double health, PubgLocation location, int ranking, String accountId) {
+    public PubgCharacter(String name, int teamId, double health, Point3D location, int ranking, String accountId) {
         super(name, accountId);
         this.teamId = teamId;
         this.health = health;
@@ -23,9 +23,9 @@ public class PubgCharacter extends PubgUser {
         double health = object.getDouble("health");
         int ranking = object.getInt("ranking");
         String accountId = object.getString("accountId");
-        PubgLocation location = null;
+        Point3D location = null;
         if (object.has("location")) {
-            location = PubgLocation.parse(object.getJSONObject("location"));
+            location = Point3D.parse(object.getJSONObject("location"));
         }
         return new PubgCharacter(name, teamId, health, location, ranking, accountId);
     }
@@ -53,7 +53,7 @@ public class PubgCharacter extends PubgUser {
      *
      * @return value of location
      */
-    public PubgLocation getLocation() {
+    public Point3D getLocation() {
         return location;
     }
 

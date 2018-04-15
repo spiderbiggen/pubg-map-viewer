@@ -3,16 +3,21 @@ package com.spiderbiggen.pmv.models.telemetry;
 import org.json.JSONObject;
 
 public class PubgCommon {
-    private String matchId;
-    private String mapName;
-    private int isGame;
+    private final String matchId;
+    private final String mapName;
+    private final int isGame;
+
+    public PubgCommon(String matchId, String mapName, int isGame) {
+        this.matchId = matchId;
+        this.mapName = mapName;
+        this.isGame = isGame;
+    }
 
     public static PubgCommon parse(JSONObject object) {
-        PubgCommon common = new PubgCommon();
-        common.setMatchId(object.optString("matchId"));
-        common.setMapName(object.optString("mapName"));
-        common.setIsGame(object.optInt("isGame"));
-        return common;
+        var matchId = object.optString("matchId");
+        var mapName = object.optString("mapName");
+        var isGame = object.optInt("isGame");
+        return new PubgCommon(matchId, mapName, isGame);
     }
 
     /**
@@ -25,30 +30,12 @@ public class PubgCommon {
     }
 
     /**
-     * Sets mapName.
-     *
-     * @param mapName the new value of mapName
-     */
-    public void setMapName(String mapName) {
-        this.mapName = mapName;
-    }
-
-    /**
      * Gets isGame
      *
      * @return value of isGame
      */
     public int getIsGame() {
         return isGame;
-    }
-
-    /**
-     * Sets isGame.
-     *
-     * @param isGame the new value of isGame
-     */
-    public void setIsGame(int isGame) {
-        this.isGame = isGame;
     }
 
     /**
@@ -61,12 +48,4 @@ public class PubgCommon {
         return matchId;
     }
 
-    /**
-     * Sets matchId.
-     *
-     * @param matchId the new value of matchId
-     */
-    public void setMatchId(String matchId) {
-        this.matchId = matchId;
-    }
 }

@@ -13,16 +13,11 @@
         <ToggleGroup fx:id="mapGroup" />
     </fx:define>
     <BorderPane AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
-        <top>
-            <MenuBar fx:id="menuBar" />
-        </top>
         <left>
             <AnchorPane>
                 <VBox AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
                     <VBox spacing="10">
                         <Button onAction="#selectFileDialog" text="Browse..." maxWidth="Infinity" />
-                        <RadioButton onAction="#selectedErangel" selected="true" text="Erangel" toggleGroup="$mapGroup" />
-                        <RadioButton onAction="#selectedMiramar" text="Miramar" toggleGroup="$mapGroup" />
                         <Button onAction="#refresh" text="Refresh" maxWidth="Infinity" />
                         <Button onAction="#randomizeColors" text="Randomize colors" maxWidth="Infinity" />
                         <padding>
