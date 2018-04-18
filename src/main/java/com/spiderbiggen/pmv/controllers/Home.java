@@ -5,6 +5,7 @@ import com.spiderbiggen.pmv.models.PubgUser;
 import com.spiderbiggen.pmv.models.drawing.Path2D;
 import com.spiderbiggen.pmv.models.telemetry.PubgCharacter;
 import com.spiderbiggen.pmv.models.telemetry.PubgGameEvent;
+import com.spiderbiggen.pmv.models.telemetry.PubgLocation;
 import com.spiderbiggen.pmv.models.telemetry.Telemetry;
 import com.spiderbiggen.pmv.util.Images;
 import com.spiderbiggen.pmv.views.MapCanvas;
@@ -66,7 +67,8 @@ public class Home implements Initializable {
             var locations = entry.getValue().stream()
                     .map(PubgGameEvent::getCharacter)
                     .map(PubgCharacter::getLocation)
-                    .map(gameMap::scaleLocation)
+                    .map(PubgLocation::getPoint2D)
+                    .map(point2D -> point2D.scale(gameMap.getScale()))
                     .collect(Collectors.toList());
             map.put(entry.getKey(), new Path2D(locations));
         }

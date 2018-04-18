@@ -1,12 +1,12 @@
 package com.spiderbiggen.pmv.models;
 
-import com.spiderbiggen.pmv.models.telemetry.Point3D;
+import com.spiderbiggen.pmv.models.telemetry.PubgLocation;
 
 import java.util.Locale;
 
 public enum GameMap {
-    ERANGEL(819_500.0), // 819_500
-    MIRAMAR(819_500.0);
+    ERANGEL(819_200.0), // 819_500
+    MIRAMAR(819_200.0);
 
     private final double mapSize;
 
@@ -35,9 +35,6 @@ public enum GameMap {
             return ERANGEL;
         }
     }
-
-    //    "/img/maps/erangel_full_map.jpg", "/img/maps/erangel_minimap_lowres.jpg", "/img/maps/erangel_full_map_small.jpg"
-    //    "/img/maps/miramar_full_map.jpg", "/img/maps/miramar_minimap_lowres.jpg", "/img/maps/miramar_full_map_small.jpg"
 
     /**
      * Gets Relative Path to the image file for this map.
@@ -82,10 +79,6 @@ public enum GameMap {
      */
     public double getScale() {
         return 1d / mapSize;
-    }
-
-    public Point3D scaleLocation(Point3D location) {
-        return location.getScaled(getScale());
     }
 
     private static class Constants {

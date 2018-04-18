@@ -1,7 +1,7 @@
 package com.spiderbiggen.pmv.util;
 
 import com.spiderbiggen.pmv.models.telemetry.PubgGameEvent;
-import com.spiderbiggen.pmv.models.telemetry.Point3D;
+import com.spiderbiggen.pmv.models.telemetry.PubgLocation;
 import org.json.JSONArray;
 
 import java.io.BufferedReader;
@@ -26,13 +26,13 @@ public class Wutface {
             }
         }
 
-        List<Point3D> locations = getLocations(parse(json.toString()));
+        List<PubgLocation> locations = getLocations(parse(json.toString()));
         OptionalDouble maxX = locations.parallelStream()
-                .mapToDouble(Point3D::getX).max();
+                .mapToDouble(PubgLocation::getX).max();
         OptionalDouble maxY = locations.parallelStream()
-                .mapToDouble(Point3D::getY).max();
+                .mapToDouble(PubgLocation::getY).max();
         OptionalDouble maxZ = locations.parallelStream()
-                .mapToDouble(Point3D::getZ).max();
+                .mapToDouble(PubgLocation::getZ).max();
         System.out.printf("(%8.2f, %8.2f, %8.2f)", maxX.orElse(0), maxY.orElse(0), maxZ.orElse(0));
     }
 
@@ -46,7 +46,7 @@ public class Wutface {
         return eventList;
     }
 
-    public static List<Point3D> getLocations(List<PubgGameEvent> eventList) {
+    public static List<PubgLocation> getLocations(List<PubgGameEvent> eventList) {
         return eventList.parallelStream()
                 .filter(gameEvent -> gameEvent.getCharacter() != null)
                 .filter(gameEvent -> gameEvent.getCharacter().getLocation() != null)

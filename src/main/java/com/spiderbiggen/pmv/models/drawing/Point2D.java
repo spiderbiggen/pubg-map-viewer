@@ -1,8 +1,10 @@
 package com.spiderbiggen.pmv.models.drawing;
 
-public class Point2D {
-    private final double x;
-    private final double y;
+import com.spiderbiggen.pmv.models.CopyAble;
+
+public class Point2D implements CopyAble<Point2D> {
+    protected double x;
+    protected double y;
 
     public Point2D(double x, double y) {
         this.x = x;
@@ -27,11 +29,20 @@ public class Point2D {
         return y;
     }
 
-    public Point2D getScaled(double scale) {
-        return new Point2D(x * scale, y * scale);
+    public Point2D scale(double scale) {
+        x *= scale;
+        y *= scale;
+        return this;
     }
 
     public Point2D translate(double dX, double dY) {
-        return new Point2D(x + dX, y + dY);
+        x += dX;
+        y += dY;
+        return this;
+    }
+
+    @Override
+    public Point2D getCopy() {
+        return new Point2D(x, y);
     }
 }

@@ -15,7 +15,7 @@ public class Path2D {
     private double translateX;
     private double translateY;
 
-    public Path2D(Collection<? extends Point2D> points) {
+    public Path2D(Collection<Point2D> points) {
         setPoints(points);
     }
 
@@ -24,7 +24,7 @@ public class Path2D {
      *
      * @param points the new value of points
      */
-    public void setPoints(Collection<? extends Point2D> points) {
+    public void setPoints(Collection<Point2D> points) {
         this.points = new ArrayList<>(points);
         setScale(scale);
     }
@@ -54,7 +54,7 @@ public class Path2D {
      */
     public Path2D setScale(double scale) {
         this.scale = scale;
-        scaledPoints = points.stream().map(p -> p.getScaled(scale)).collect(Collectors.toList());
+        scaledPoints = points.stream().map(p -> p.scale(scale)).collect(Collectors.toList());
         double translateX = this.translateX;
         double translateY = this.translateY;
         this.translateX = 0;
@@ -84,7 +84,7 @@ public class Path2D {
     public Path2D translate(double dX, double dY) {
         translateX += dX;
         translateY += dY;
-        scaledPoints = scaledPoints.stream().map(p -> p.translate(dX, dY)).collect(Collectors.toList());
+        scaledPoints = scaledPoints.stream().map(p -> p.getCopy().translate(dX, dY)).collect(Collectors.toList());
         return this;
     }
 
