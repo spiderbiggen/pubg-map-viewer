@@ -1,7 +1,5 @@
 package com.spiderbiggen.pmv.models;
 
-import com.spiderbiggen.pmv.models.telemetry.PubgLocation;
-
 import java.util.Locale;
 
 public enum GameMap {

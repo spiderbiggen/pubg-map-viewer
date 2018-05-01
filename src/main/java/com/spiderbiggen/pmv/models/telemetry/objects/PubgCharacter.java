@@ -1,4 +1,4 @@
-package com.spiderbiggen.pmv.models.telemetry;
+package com.spiderbiggen.pmv.models.telemetry.objects;
 
 import com.spiderbiggen.pmv.models.PubgUser;
 import org.json.JSONObject;

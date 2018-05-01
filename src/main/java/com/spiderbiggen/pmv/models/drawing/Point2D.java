@@ -45,4 +45,9 @@ public class Point2D implements CopyAble<Point2D> {
     public Point2D getCopy() {
         return new Point2D(x, y);
     }
+
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ")";
+    }
 }

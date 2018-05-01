@@ -1,4 +1,4 @@
-package com.spiderbiggen.pmv.models.telemetry;
+package com.spiderbiggen.pmv.models.telemetry.objects;
 
 import com.spiderbiggen.pmv.models.drawing.Point2D;
 import org.json.JSONObject;
@@ -40,6 +40,17 @@ public class PubgLocation extends Point2D {
         return new PubgLocation(x, y, z);
     }
 
+    @Override
+    public String toString() {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
+    /**
+     * @param dX
+     * @param dY
+     * @param dZ
+     * @return
+     */
     public PubgLocation translate(double dX, double dY, double dZ) {
         super.translate(dX, dY);
         z += dZ;

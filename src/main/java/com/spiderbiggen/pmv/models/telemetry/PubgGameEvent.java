@@ -1,5 +1,7 @@
 package com.spiderbiggen.pmv.models.telemetry;
 
+import com.spiderbiggen.pmv.models.telemetry.objects.PubgCharacter;
+import com.spiderbiggen.pmv.models.telemetry.objects.PubgCommon;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;

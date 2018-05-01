@@ -2,6 +2,7 @@ package com.spiderbiggen.pmv.models.telemetry;
 
 import com.spiderbiggen.pmv.models.GameMap;
 import com.spiderbiggen.pmv.models.PubgUser;
+import com.spiderbiggen.pmv.models.telemetry.objects.PubgCommon;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.json.JSONTokener;

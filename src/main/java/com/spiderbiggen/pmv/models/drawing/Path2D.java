@@ -1,6 +1,9 @@
 package com.spiderbiggen.pmv.models.drawing;
 
+import com.spiderbiggen.pmv.util.Colors;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,12 +11,16 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Path2D {
+
+    private static final double ALPHA = 0.85;
+
     private List<Point2D> points;
     private List<Point2D> scaledPoints;
 
-    private double scale;
+    private double scale = 1;
     private double translateX;
     private double translateY;
+    private Color color = Colors.getRandomColor(ALPHA);
 
     public Path2D(Collection<Point2D> points) {
         setPoints(points);
@@ -30,31 +37,13 @@ public class Path2D {
     }
 
     /**
-     * Gets scaledPoints
-     *
-     * @return value of scaledPoints
-     */
-    public List<Point2D> getScaledPoints() {
-        return scaledPoints;
-    }
-
-    /**
-     * Gets scale
-     *
-     * @return value of scale
-     */
-    public double getScale() {
-        return scale;
-    }
-
-    /**
      * Sets scale.
      *
      * @param scale the new value of scale
      */
     public Path2D setScale(double scale) {
         this.scale = scale;
-        scaledPoints = points.stream().map(p -> p.scale(scale)).collect(Collectors.toList());
+        scaledPoints = points.stream().map(p -> p.getCopy().scale(scale)).collect(Collectors.toList());
         double translateX = this.translateX;
         double translateY = this.translateY;
         this.translateX = 0;
@@ -62,29 +51,11 @@ public class Path2D {
         translateTo(translateX, translateY);
         return this;
     }
-
-    /**
-     * Gets translateX
-     *
-     * @return value of translateX
-     */
-    public double getTranslateX() {
-        return translateX;
-    }
-
-    /**
-     * Gets translateY
-     *
-     * @return value of translateY
-     */
-    public double getTranslateY() {
-        return translateY;
-    }
-
+    
     public Path2D translate(double dX, double dY) {
         translateX += dX;
         translateY += dY;
-        scaledPoints = scaledPoints.stream().map(p -> p.getCopy().translate(dX, dY)).collect(Collectors.toList());
+        scaledPoints.forEach(p -> p.translate(dX, dY));
         return this;
     }
 
@@ -96,6 +67,7 @@ public class Path2D {
 
     public void draw(GraphicsContext context) {
         if (scaledPoints.isEmpty()) return;
+        context.setStroke(color);
         context.beginPath();
         Point2D start = scaledPoints.get(0);
         context.moveTo(start.getX(), start.getY());
@@ -106,4 +78,16 @@ public class Path2D {
         context.stroke();
     }
 
+    public void randomizeColor() {
+        color = Colors.getRandomColor(ALPHA);
+    }
+
+    /**
+     * Gets color
+     *
+     * @return value of color
+     */
+    public Paint getColor() {
+        return color;
+    }
 }

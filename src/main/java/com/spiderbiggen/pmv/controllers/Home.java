@@ -3,10 +3,10 @@ package com.spiderbiggen.pmv.controllers;
 import com.spiderbiggen.pmv.models.GameMap;
 import com.spiderbiggen.pmv.models.PubgUser;
 import com.spiderbiggen.pmv.models.drawing.Path2D;
-import com.spiderbiggen.pmv.models.telemetry.PubgCharacter;
 import com.spiderbiggen.pmv.models.telemetry.PubgGameEvent;
-import com.spiderbiggen.pmv.models.telemetry.PubgLocation;
 import com.spiderbiggen.pmv.models.telemetry.Telemetry;
+import com.spiderbiggen.pmv.models.telemetry.objects.PubgCharacter;
+import com.spiderbiggen.pmv.models.telemetry.objects.PubgLocation;
 import com.spiderbiggen.pmv.util.Images;
 import com.spiderbiggen.pmv.views.MapCanvas;
 import javafx.application.Platform;
@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 public class Home implements Initializable {
@@ -44,13 +45,15 @@ public class Home implements Initializable {
     private MapCanvas canvas;
     private double startX, startY;
     private GameMap current = null;
+    private AtomicReference<Telemetry> telemetryAtomicReference = new AtomicReference<>();
+    private AtomicReference<Map<PubgUser, Path2D>> mapUserLocations = new AtomicReference<>();
 
     private static Map<PubgUser, List<PubgGameEvent>> removePreGamePositions(Map<PubgUser, List<PubgGameEvent>> players) {
         for (var user : players.keySet()) {
             var remove = new ArrayList<PubgGameEvent>();
             var gameEvents = players.get(user);
             for (var event : gameEvents) {
-                if (event.getCommon().getIsGame() <= 0) {
+                if (event.getCommon().getIsGame() <= 0.5) {
                     remove.add(event);
                 } else {
                     break;
@@ -78,7 +81,9 @@ public class Home implements Initializable {
     private void loadDataFromJson(File file) {
         var future = CompletableFuture.supplyAsync(() -> {
             try (InputStream inputStream = new FileInputStream(file)) {
-                return Telemetry.parse(inputStream);
+                Telemetry telemetry = Telemetry.parse(inputStream);
+                telemetryAtomicReference.set(telemetry);
+                return telemetry;
             } catch (IOException e) {
                 throw new CompletionException(e);
             }
@@ -87,30 +92,31 @@ public class Home implements Initializable {
             e.printStackTrace();
             return null;
         });
-        future.thenAccept(telemetry -> setImagesForMap(telemetry.getMap()));
-        future.thenAcceptAsync(telemetry -> Platform.runLater(() -> {
-            playerList.setItems(FXCollections.observableArrayList(telemetry.getPlayers()));
-            playerList.getSelectionModel().selectFirst();
-            canvas.setSelectedPlayers(playerList.getSelectionModel().getSelectedItems());
-            canvas.draw();
-        }));
-
-        var locationFuture = future.thenApplyAsync((Telemetry players) -> removePreGamePositions(players.getUserEventMap()));
+        var locationFuture = future.thenApplyAsync(telemetry -> removePreGamePositions(telemetry.getUserEventMap()));
         locationFuture.exceptionally(e -> {
             e.printStackTrace();
             return null;
         });
 
         locationFuture.thenAcceptBoth(future, (pubgUserListMap, telemetry) -> {
-            Map<PubgUser, Path2D> mapUserLocations = normalizePositions(telemetry.getMap(), pubgUserListMap);
-            canvas.setUserPaths(mapUserLocations);
-            canvas.randomizeColors();
+            mapUserLocations.set(normalizePositions(telemetry.getMap(), pubgUserListMap));
         });
+        future.thenAccept(telemetry -> setImagesForMap(telemetry.getMap()));
+        future.thenAcceptAsync(telemetry -> Platform.runLater(() -> {
+            playerList.setItems(FXCollections.observableArrayList(telemetry.getPlayers()));
+            playerList.getSelectionModel().selectFirst();
+            reload();
+        }));
+
     }
 
     private void reload() {
-        if (canvas != null && playerList != null) {
-            canvas.setSelectedPlayers(playerList.getSelectionModel().getSelectedItems());
+        var pathMap = mapUserLocations.get();
+        if (canvas != null && playerList != null && pathMap != null) {
+            var players = playerList.getSelectionModel().getSelectedItems();
+
+            var paths = players.stream().map(pathMap::get).collect(Collectors.toList());
+            canvas.setUserPaths(paths);
             canvas.draw();
         }
     }
@@ -152,8 +158,8 @@ public class Home implements Initializable {
     }
 
     public void randomizeColors(ActionEvent actionEvent) {
-        canvas.randomizeColors();
-        reload();
+        mapUserLocations.get().values().forEach(Path2D::randomizeColor);
+        canvas.draw();
     }
 
     public void refresh(ActionEvent actionEvent) {
